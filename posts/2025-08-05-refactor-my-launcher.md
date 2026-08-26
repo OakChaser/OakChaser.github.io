@@ -3,7 +3,7 @@ title: "使用内联插件（Inline plugins）的方法重构Tauri项目"
 description:
     - 我有一个开发时长两年半的 Minecraft 启动器项目，由于过去经验过于缺乏，模块之间的结构十分混乱，于是我最近对它进行了重构。本文主要记录这一过程中踩过的坑，希望可以帮助到正在使用 Tauri 的你。
 author: "OakChaser"
-minutes: 40
+minutes: 15
 date: "2025-08-05"
 tags:
     - Conic

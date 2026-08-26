@@ -4,7 +4,7 @@ subtitle: 使用 Certbot 自动续签证书
 description:
     - Let's Encrypt 的免费证书只有90天有效期，你是否经常忘了续签？本文将手把手教你使用 Certbot 并设置自动续签，一劳永逸解决证书过期问题。
 author: "OakChaser"
-minutes: 20
+minutes: 10
 date: "2025-08-01"
 tags:
     - Technical

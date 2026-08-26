@@ -3,7 +3,7 @@ title: "在 Neovim 0.11 中配置 LSP"
 description:
     - Neovim 0.11 更新后，简化了lsp配置流程，不再需要 nvim-lspconfig。本文通过实际配置，介绍如何启用 LSP 客户端、安装语言服务器、配置诊断提示与快捷键。
 author: "OakChaser"
-minutes: 20
+minutes: 15
 date: "2025-07-30"
 tags:
     - Technical

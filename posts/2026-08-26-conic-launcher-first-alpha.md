@@ -3,7 +3,7 @@ title: "Conic Launcher 的第一个 Alpha 版本已发布"
 description:
     - 经历了三年半的拖更，Conic Launcher 终于进入了 Alpha 阶段。本文将会讲述一下开发历程和其中有趣的设计。
 author: "OakChaser"
-minutes: 40
+minutes: 5
 date: "2026-08-26"
 tags:
     - Conic
