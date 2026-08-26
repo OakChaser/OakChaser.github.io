@@ -2,7 +2,7 @@
 title: "在 Neovim 0.11 中配置 LSP"
 description:
     - Neovim 0.11 更新后，简化了lsp配置流程，不再需要 nvim-lspconfig。本文通过实际配置，介绍如何启用 LSP 客户端、安装语言服务器、配置诊断提示与快捷键。
-author: "Broken-Deer"
+author: "OakChaser"
 minutes: 20
 date: "2025-07-30"
 tags:
@@ -461,7 +461,7 @@ vim.lsp.enable('lua_ls')
 - 如果遇到问题，请先尝试 `:checkhealth vim.lsp`，查看配置是否出错
 - 如果使用 lazydev 插件，请删除 `lsp.lua` 中的 `vim.lsp.enable('lua_ls')`，因为插件会自动调用这个函数
 
-之后可能再出一篇教程，讲讲如何配置vue和rust。[我的配置仓库](https://github.com/Broken-Deer/nvim-config)
+之后可能再出一篇教程，讲讲如何配置vue和rust。[我的配置仓库](https://github.com/OakChaser/nvim-config)
 
 <p style="text-align: center">
 希望这篇文章能帮到你~

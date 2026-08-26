@@ -1,11 +1,11 @@
-Broken-Deer.github.io
+OakChaser.github.io
 =====================
 
 This is my personal blog built with VitePress and Catppuccin theme. All
 blog posts are stored in the posts/ directory as Markdown files. The 
 formatted posts can be read online:
 
-    https://broken-deer.github.io
+    https://oakchaser.github.io
 
 The codes are licensed under GPL-3.0, and the posts are licensed under 
 CC BY-NC-SA 4.0, for more information, please read:

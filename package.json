@@ -1,6 +1,7 @@
 {
     "type": "module",
     "private": true,
+    "packageManager": "pnpm@11.9.0",
     "version": "0.0.0",
     "license": "GPL-3.0-only",
     "devDependencies": {
@@ -13,7 +14,7 @@
         "dev": "vitepress dev",
         "build": "vitepress build",
         "preview": "vitepress preview",
-        "fmt": "yarn prettier --write ."
+        "fmt": "pnpm prettier --write ."
     },
     "dependencies": {
         "@catppuccin/vitepress": "^0.1.2",

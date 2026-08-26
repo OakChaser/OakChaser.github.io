@@ -1,13 +1,12 @@
 import { defineConfig } from "vitepress"
 
-import { defineConfig as defineViteConfig } from "vite"
 import { fileURLToPath, URL } from "node:url"
 import { RSSOptions, RssPlugin } from "vitepress-plugin-rss"
 
 const RSS: RSSOptions = {
-    title: "Broken-Deer 的垃圾堆",
-    baseUrl: "https://Broken-Deer.github.io",
-    copyright: "Copyright © 2025-present Broken-Deer. All rights reserved.",
+    title: "OakChaser 的垃圾堆",
+    baseUrl: "https://OakChaser.github.io",
+    copyright: "Copyright © 2025-present OakChaser. All rights reserved.",
 }
 export default defineConfig({
     head: [
@@ -20,8 +19,8 @@ export default defineConfig({
             },
         ],
     ],
-    title: "Broken-Deer's Blog",
-    description: "Broken-Deer 的垃圾堆",
+    title: "OakChaser's Blog",
+    description: "OakChaser 的垃圾堆",
     markdown: {
         theme: {
             light: "catppuccin-latte",
@@ -45,12 +44,12 @@ export default defineConfig({
             { text: "Archive", link: "/archive" },
             { text: "Random", link: "/random" },
         ],
-        socialLinks: [{ icon: "github", link: "https://github.com/Broken-Deer/" }],
+        socialLinks: [{ icon: "github", link: "https://github.com/OakChaser/" }],
         search: {
             provider: "local",
         },
         editLink: {
-            pattern: "https://github.com/Broken-Deer/Broken-Deer.github.io/edit/master/:path",
+            pattern: "https://github.com/OakChaser/OakChaser.github.io/edit/master/:path",
             text: "在 GitHub 上编辑此页面",
         },
         lastUpdated: {
@@ -62,12 +61,12 @@ export default defineConfig({
         },
         returnToTopLabel: "返回顶部",
         footer: {
-            copyright: "Copyright © 2025-present Broken-Deer. All rights reserved.",
+            copyright: "Copyright © 2025-present OakChaser. All rights reserved.",
             message: "Content lisenced under CC BY-NC-SA 4.0 unless otherwise noted.",
         },
         externalLinkIcon: true,
     },
-    vite: defineViteConfig({
+    vite: {
         plugins: [RssPlugin(RSS)],
         resolve: {
             alias: {
@@ -78,5 +77,5 @@ export default defineConfig({
             minify: "esbuild",
             target: "chrome89",
         },
-    }),
+    },
 })

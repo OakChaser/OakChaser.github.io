@@ -1,7 +1,7 @@
 ---
 title: "如何备份安卓字库"
 description: "本文记录了在不使用第三方工具的情况下，通过命令行备份和恢复 Android 字库（分区镜像）的方法。"
-author: "Broken-Deer"
+author: "OakChaser"
 minutes: 5
 date: "2025-05-03"
 tags:

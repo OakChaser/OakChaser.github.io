@@ -12,7 +12,7 @@ const props = defineProps<{
   author: string;
 }>();
 const avatarPath = {
-  "Broken-Deer": "/avatar.png",
+  "OakChaser": "/avatar.png",
 };
 </script>
 

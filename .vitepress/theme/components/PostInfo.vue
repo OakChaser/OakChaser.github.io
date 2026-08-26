@@ -3,7 +3,7 @@
     <h1 class="title">{{ frontmatter.title }}</h1>
     <Author
       :author="frontmatter.author"
-      v-if="frontmatter.author !== 'Broken-Deer'"
+      v-if="frontmatter.author !== 'OakChaser'"
       style="margin-bottom: 16px" />
     <div style="display: flex; margin-bottom: 48px">
       <ClientOnly>

@@ -2,10 +2,11 @@
 title: "使用内联插件（Inline plugins）的方法重构Tauri项目"
 description:
     - 我有一个开发时长两年半的 Minecraft 启动器项目，由于过去经验过于缺乏，模块之间的结构十分混乱，于是我最近对它进行了重构。本文主要记录这一过程中踩过的坑，希望可以帮助到正在使用 Tauri 的你。
-author: "Broken-Deer"
+author: "OakChaser"
 minutes: 40
 date: "2025-08-05"
 tags:
+    - Conic
     - Technical
     - Note
     - Tauri
@@ -144,10 +145,10 @@ pub fn init<R: Runtime>() -> TauriPlugin<R> {
 首先我遇到的错误是这个：
 
 ```log
-error: cyclic package dependency: package config v0.0.0 (/home/brokendeer/Desktop/conic-launcher/crates/config) depends on itself. Cycle:
-package config v0.0.0 (/home/brokendeer/Desktop/conic-launcher/crates/config)
-... which satisfies path dependency config (locked to 0.0.0) of package conic-launcher v0.0.0 (/home/brokendeer/Desktop/conic-launcher/src-tauri)
-... which satisfies path dependency conic-launcher (locked to 0.0.0) of package config v0.0.0 (/home/brokendeer/Desktop/conic-launcher/crates/config)
+error: cyclic package dependency: package config v0.0.0 (/home/oakchaser/Desktop/conic-launcher/crates/config) depends on itself. Cycle:
+package config v0.0.0 (/home/oakchaser/Desktop/conic-launcher/crates/config)
+... which satisfies path dependency config (locked to 0.0.0) of package conic-launcher v0.0.0 (/home/oakchaser/Desktop/conic-launcher/src-tauri)
+... which satisfies path dependency conic-launcher (locked to 0.0.0) of package config v0.0.0 (/home/oakchaser/Desktop/conic-launcher/crates/config)
 ```
 这显然是平常不注意项目结构导致的，主包中有一个全局状态的结构体，其中用到了`config` 包里的结构体，而 `config` 包又依赖主包的这个全局状态，所以造成了循环依赖，而在 Rust 项目中，包与包之间的依赖关系是不允许这样的，于是编译器报错。
 
