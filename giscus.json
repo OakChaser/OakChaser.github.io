@@ -1,3 +1,7 @@
 {
-    "origins": ["https://oakchaser.github.io", "https://OakChaser.github.io"]
+    "origins": [
+        "https://oakchaser.github.io",
+        "https://OakChaser.github.io",
+        "https://oakchaser.me"
+    ]
 }
