@@ -9,6 +9,7 @@
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { commandFromHash } from '../shell/hash';
 import { termTheme } from './palette';
 import '@xterm/xterm/css/xterm.css';
 
@@ -35,11 +36,11 @@ export interface TuiSession {
 
 /** If `target` is an internal same-page link, return its command slug; else null. */
 function internalPage(target: string): string | null {
-  if (target.startsWith('#')) return target.slice(1) || null;
+  if (target.startsWith('#')) return commandFromHash(target) || null;
   try {
     const u = new URL(target, location.href);
     if (u.origin === location.origin && u.pathname === location.pathname && u.hash) {
-      return u.hash.slice(1) || null;
+      return commandFromHash(u.hash) || null;
     }
   } catch {
     /* not a url */

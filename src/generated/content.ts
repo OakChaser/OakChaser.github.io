@@ -4,6 +4,14 @@ import type { Manifest } from '../content/types';
 export const manifest: Manifest = {
   "documents": [
     {
+      "slug": "friends",
+      "title": "Friends",
+      "body": "# Friends\n\nA small corner for the folks I've crossed paths with. Drop a line if you'd like to be here too~\n\n- [Twisuki](https://twis.uk) - A Neko like to make friends everywhere~",
+      "path": "friends.md",
+      "kind": "page",
+      "apps": []
+    },
+    {
       "slug": "help",
       "title": "Help",
       "body": "# Help\n\nThis site is a terminal. Documents are commands — `index`, `help`, `repos` —\nand tools live in `/bin`.\n\n## commands\n\n- `ls [dir]`    list a directory (try `ls /bin`)\n- `cat <path>`  print a document (no clear; pipe-friendly)\n- `head [path]` first lines (`head -n 5 index`, `cat index | head`)\n- `tail [path]` last lines (`tail -n 3 index`)\n- `grep <pat>`  filter lines (`cat index | grep foo`)\n- `find [path]` walk the FS (`find /bin -type f`, `find -name repos`)\n- `tree [path]` draw the FS as a tree\n- `more [path]` page a document or stdin (space/b/q)\n- `less [path]` same pager, with PageUp/PageDown\n- `cd <dir>`    change directory (`cd /bin`, `cd ..`, `cd /`)\n- `clear`       clear the screen\n- `wc`          count lines/words/bytes from stdin\n- `exit`        return to the home page (same as Ctrl-D on an empty line)\n\n## tips\n\n- Run a page like `index` to open it (clears the screen).\n- Pipes work: `cat index | wc -l`.\n- Paths: `./repos`, `/help`, `../`.\n- History: ↑/↓ or Ctrl-P/N. Cancel: Ctrl-C. Clear: Ctrl-L.\n- Completion: Tab lists and cycles candidates; Shift-Tab cycles backwards.",
@@ -14,7 +22,7 @@ export const manifest: Manifest = {
     {
       "slug": "index",
       "title": "OakChaser",
-      "body": "# OakChaser\n\n**Hi, OakChaser here.**\n\n*Oak...Chaser...?*\n\n> 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)\n\n## Work in progress\n\n- 🔨 [Conic Launcher](https://github.com/conic-apps/launcher) — Strikingly unique and blazing fast Minecraft Launcher.\n- 🔨 [Weihuda WeApp](https://github.com/qnxg) — Wechat mini program for HNU.\n\n## Finished\n\n- ✅ [Conic Nexus](https://github.com/conic-apps/conic-nexus) — Cross-LAN multiplayer library.\n- ✅ [Conic Worldmap](https://github.com/conic-apps/) — Lightweight Minecraft world map rendering library.\n- ✅ [Beat Visualizer](https://github.com/OakChaser/beat-visualizer) — AI slop music player with beat visualizer.\n- ✅ [LexiForge](https://github.com/OakChaser/LexiForge) — Human slop word book.\n\n- This page doubles as a shell. Try: `help`, `repos`, `tree bin/ | less`.\n\nLast update: Sat Oct 10 2026",
+      "body": "# OakChaser\n\n**Hi, OakChaser here.**\n\n*Oak...Chaser...?*\n\n> 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 👥 [Friends](#cat%20friends) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)\n\n## Work in progress\n\n- 🔨 [Conic Launcher](https://github.com/conic-apps/launcher) — Strikingly unique and blazing fast Minecraft Launcher.\n- 🔨 [Weihuda WeApp](https://github.com/qnxg) — Wechat mini program for HNU.\n\n## Finished\n\n- ✅ [Conic Nexus](https://github.com/conic-apps/conic-nexus) — Cross-LAN multiplayer library.\n- ✅ [Conic Worldmap](https://github.com/conic-apps/) — Lightweight Minecraft world map rendering library.\n- ✅ [Beat Visualizer](https://github.com/OakChaser/beat-visualizer) — AI slop music player with beat visualizer.\n- ✅ [LexiForge](https://github.com/OakChaser/LexiForge) — Human slop word book.\n\n- This page doubles as a shell. Try: `help`, `repos`, `tree bin/ | less`.\n\nLast update: Sat Oct 10 2026",
       "path": "index.md",
       "kind": "page",
       "apps": []
