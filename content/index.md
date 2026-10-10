@@ -4,7 +4,7 @@
 
 *Oak...Chaser...?*
 
-> 🐙 [GitHub](https://github.com/OakChaser) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)
+> 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)
 
 ## Work in progress
 

@@ -1,10 +1,11 @@
 // Vite plugin: keeps src/generated/content.ts fresh.
 // - runs the compiler once at buildStart (covers `vite` and `vite build`)
 // - on dev server, recompiles whenever a file under content/ changes and live-reloads
-// - embeds the home page's text in the HTML (transformIndexHtml) so the site is
-//   readable over a plain HTTP fetch (curl, no-JS clients) — the body is otherwise
-//   a JS-rendered terminal that looks empty in the raw HTML.
+// - prerenders the home page (index.md) into the HTML as semantic markup inside a
+//   <noscript>, so crawlers and no-JS clients see real headings and links instead
+//   of an empty JS-rendered terminal.
 import type { Plugin } from 'vite';
+import { marked } from 'marked';
 import { buildContent } from './build-content';
 
 export function contentPlugin(): Plugin {
@@ -23,13 +24,14 @@ export function contentPlugin(): Plugin {
 
     transformIndexHtml() {
       if (!homeBody) return;
-      // Escape only what HTML requires in text (<, &) — leave '>' alone so the
-      // raw text stays readable in `curl` output.
-      const text = homeBody.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+      // Prerender index.md to semantic HTML (h1/h2, ul/li, real <a href>), so the
+      // static response is crawlable. Internal links stay as "#slug", which the
+      // terminal's hash router already runs as a command.
+      const html = marked.parse(homeBody) as string;
       return [
         {
           tag: 'noscript',
-          children: `<pre>${text}</pre>`,
+          children: html,
           injectTo: 'body',
         },
       ];
