@@ -6,7 +6,18 @@ import type { ContentStore } from '../content/store';
 import type { Context, DirEntry, Registry, StdOut } from './types';
 import { parseLine } from './parser';
 import { resolvePath } from './path';
-import { displayWidth, prevClusterStart, nextClusterEnd } from '../term/ansi';
+import { isDir, childrenOf } from './vfs';
+import {
+  INVERSE,
+  RESET,
+  bgHex,
+  displayWidth,
+  fgHex,
+  prevClusterStart,
+  nextClusterEnd,
+  stripAnsi,
+} from '../term/ansi';
+import { p10k, ui } from '../term/palette';
 
 export interface ShellDeps {
   term: Term;
@@ -54,11 +65,28 @@ export class Shell {
   private cwd = ''; // '' = root '/'
   private curPrompt = '';
   private curWidth = 0;
+  /** Right prompt (status pill) drawn flush right on the input line. */
+  private curRPrompt = '';
+  /** Exit status of the last executed command (drives status + transient color). */
+  private lastOk = true;
+  /** Rows currently occupied by the candidate list BELOW the input line. */
+  private listBelow = 0;
   private buffer = '';
   private cursor = 0;
   private history: string[] = [];
   private histIdx = -1;
   private resolveLine?: (line: string) => void;
+  /** Active menu-completion session (listing + cycling candidates on Tab). */
+  private compSession?: {
+    wordStart: number;
+    base: string;
+    matches: string[];
+    index: number;
+    /** Rendered cells (colored text + plain text + visible width) for the list. */
+    items: { text: string; plain: string; width: number }[];
+    /** Column layout of the list. */
+    layout: { maxw: number; cols: number; rows: number };
+  };
 
   constructor(deps: ShellDeps) {
     this.term = deps.term;
@@ -67,31 +95,77 @@ export class Shell {
     this.initialCommand = deps.initialCommand;
   }
 
-  /** Build the prompt from the current cwd ('/' at root, else /bin etc). */
+  /** Virtual FS path label: '/' at root, '/bin' in the bin dir. */
+  private pathLabel(): string {
+    return '/' + this.cwd;
+  }
+
+  /** Roll the terminal title to `oakchaser@NyanOS: <path>`. */
+  private updateTitle(): void {
+    document.title = `oakchaser@NyanOS: ${this.pathLabel()}`;
+  }
+
+  /**
+   * Build the active prompt: a powerlevel10k classic single line, Catppuccin
+   * Mocha — a rounded SURFACE0 pill holding the OS icon and the directory,
+   * capped by round head/tail (no ❯; that only appears in the transient prompt).
+   */
   private promptFor(): { text: string; width: number } {
-    const loc = '/' + this.cwd; // cwd is '' at root → '/'
-    return {
-      text: `\x1b[38;5;62mjyy\x1b[0m:\x1b[38;5;33m${loc}\x1b[0m\x1b[38;5;244m$\x1b[0m `,
-      width: `jyy:${loc}$ `.length,
-    };
+    const loc = this.pathLabel();
+    const text =
+      RESET +
+      fgHex(p10k.bg) + p10k.head +
+      bgHex(p10k.bg) + fgHex(p10k.osFg) + ' ' + p10k.osIcon + ' ' +
+      fgHex(p10k.sepFg) + p10k.subseg +
+      fgHex(p10k.dirFg) + ' ' + p10k.folderIcon + ' ' + loc + ' ' +
+      '\x1b[49m' + fgHex(p10k.bg) + p10k.tail +
+      RESET + ' ';
+    return { text, width: displayWidth(stripAnsi(text)) };
+  }
+
+  /** The right prompt: a rounded pill showing the last command's status. */
+  private statusPrompt(): string {
+    const ok = this.lastOk;
+    return (
+      RESET +
+      fgHex(p10k.bg) + p10k.head +
+      bgHex(p10k.bg) + fgHex(ok ? p10k.okFg : p10k.errFg) +
+      ' ' + (ok ? p10k.okIcon : p10k.errIcon) + ' ' +
+      '\x1b[49m' + fgHex(p10k.bg) + p10k.tail +
+      RESET
+    );
+  }
+
+  /** The transient (history) prompt: a single `❯ ` tinted by the last status. */
+  private transientPrompt(): string {
+    const c = this.lastOk ? p10k.transientFg : p10k.transientErrFg;
+    return `${fgHex(c)}${p10k.prompt}${RESET} `;
+  }
+
+  /** Replace the current (p10k) prompt line with `❯ <shown>` and a newline. */
+  private finishLine(shown: string): void {
+    this.clearBelow(); // drop any candidate list sitting under the input line
+    this.term.write('\r\x1b[2K' + this.transientPrompt() + shown + '\r\n');
   }
 
   /** Start the read/eval loop. Never returns. */
   async start(): Promise<void> {
     this.term.onShellData((d) => this.onData(d));
     if (this.initialCommand) {
-      const { text } = this.promptFor();
-      this.term.write(text + this.initialCommand + '\r\n');
+      this.updateTitle();
+      this.finishLine(this.initialCommand);
       await this.execute(this.initialCommand);
     }
     for (;;) {
       this.buffer = '';
       this.cursor = 0;
       this.histIdx = -1;
+      this.updateTitle();
       const { text, width } = this.promptFor();
       this.curPrompt = text;
       this.curWidth = width;
-      this.term.write(this.curPrompt);
+      this.curRPrompt = this.statusPrompt();
+      this.redraw();
       const line = await this.readLine();
       await this.execute(line);
     }
@@ -100,7 +174,7 @@ export class Shell {
   /** Run a command string exactly as if the user typed it (used by buttons). */
   inject(command: string): void {
     if (!this.resolveLine) return;
-    this.term.write(command + '\r\n');
+    this.finishLine(command);
     const r = this.resolveLine;
     this.resolveLine = undefined;
     r(command);
@@ -150,7 +224,6 @@ export class Shell {
     this.history.push(trimmed);
 
     const segments = splitPipe(trimmed);
-    document.title = `~jyy: ${trimmed}`;
     let stdin = '';
     for (let i = 0; i < segments.length; i++) {
       const argv = parseLine(segments[i]);
@@ -162,6 +235,7 @@ export class Shell {
         this.registry.get(p) ??
         (p.startsWith('bin/') ? this.registry.get(p.slice(4)) : undefined);
       if (!cmd) {
+        this.lastOk = false;
         this.term.print(`command not found: ${name} — try help`);
         return;
       }
@@ -188,21 +262,29 @@ export class Shell {
       try {
         await cmd.run(ctx, argv);
       } catch (e) {
+        this.lastOk = false;
         this.term.print(`error: ${String(e)}`);
         return;
       }
       stdin = buffer;
     }
+    this.lastOk = true;
   }
 
   // ---- inline line editor ----
   private onData(d: string): void {
     if (!this.resolveLine) return;
+    // Any keystroke other than Tab / Shift-Tab cancels an in-progress completion
+    // menu and removes the candidate list drawn beneath the input line.
+    if (d !== '\t' && d !== '\x1b[Z') {
+      this.compSession = undefined;
+      this.clearBelow();
+    }
     switch (d) {
       case '\r':
       case '\n': {
         const line = this.buffer;
-        this.term.write('\r\n');
+        this.finishLine(line);
         const r = this.resolveLine;
         this.resolveLine = undefined;
         r(line);
@@ -296,15 +378,18 @@ export class Shell {
         break;
       }
       case '\x03': // Ctrl-C
-        this.term.write('^C\r\n');
+        this.finishLine(this.buffer + '^C');
         if (this.resolveLine) {
           const r = this.resolveLine;
           this.resolveLine = undefined;
           r('');
         }
         break;
-      case '\t': // Tab — complete the current word from the cwd
-        this.complete();
+      case '\t': // Tab — complete / forward-cycle the menu
+        this.complete(false);
+        break;
+      case '\x1b[Z': // Shift-Tab — reverse-cycle the menu
+        this.complete(true);
         break;
       default:
         if (d.length >= 1 && !/[\x00-\x1f\x7f]/.test(d)) {
@@ -331,54 +416,220 @@ export class Shell {
     this.redraw();
   }
 
-  /** Tab-complete the word at the cursor using cwd entries (and /bin commands
-   *  for the first word). */
-  private complete(): void {
+  /** Tab-complete the word at the cursor. The first Tab takes the longest
+   *  common prefix; when that makes no progress it lists the candidates below
+   *  (like zsh) and opens a menu — further Tabs cycle through them inline.
+   *  Completion is path-aware (`cat bin/le<Tab>`, `cd ../b<Tab>`) and
+   *  case-insensitive. */
+  private complete(reverse = false): void {
     const before = this.buffer.slice(0, this.cursor);
     const wordStart = before.lastIndexOf(' ') + 1;
-    const prefix = before.slice(wordStart);
+    const word = before.slice(wordStart);
     const isFirstWord = wordStart === 0;
 
-    const entries = this.listDir('.') ?? [];
-    const names = new Set<string>();
-    const dirs = new Set<string>();
-    for (const e of entries) {
-      names.add(e.name);
-      if (e.dir) dirs.add(e.name);
+    const s = this.compSession;
+    if (s) {
+      // A menu is open. If the buffer still holds the current candidate, Tab
+      // advances to the next; if we just listed (index -1), start on the first.
+      const region = this.buffer.slice(s.wordStart, this.cursor);
+      const n = s.matches.length;
+      if (s.index >= 0 && region === s.matches[s.index]) {
+        s.index = reverse ? (s.index - 1 + n) % n : (s.index + 1) % n;
+      } else if (s.index === -1 && region === s.base) {
+        s.index = reverse ? n - 1 : 0;
+      } else {
+        this.compSession = undefined; // line edited underneath us — recompute
+      }
+      if (this.compSession) {
+        const sel = this.compSession.matches[this.compSession.index];
+        this.buffer =
+          this.buffer.slice(0, this.compSession.wordStart) + sel + this.buffer.slice(this.cursor);
+        this.cursor = this.compSession.wordStart + sel.length;
+        this.drawList(this.compSession.index); // re-highlight the selected cell
+        this.redraw();
+        return;
+      }
     }
-    if (isFirstWord) {
-      for (const c of this.registry.list()) names.add(c.name);
+
+    // Split the word into a directory part ("bin/", "../", "") and a basename.
+    const slash = word.lastIndexOf('/');
+    const dirPart = slash >= 0 ? word.slice(0, slash + 1) : '';
+    const base = slash >= 0 ? word.slice(slash + 1) : word;
+
+    // Candidate set: entries in dirPart (path-segment aware) plus, for the first
+    // word, bare command names.
+    const cand = new Map<string, { name: string; dir: boolean }>();
+    for (const e of this.entriesFor(dirPart)) cand.set(e.name, e);
+    if (isFirstWord && dirPart === '') {
+      for (const c of this.registry.list()) if (!cand.has(c.name)) cand.set(c.name, { name: c.name, dir: false });
     }
-    const matches = [...names].filter((n) => n.startsWith(prefix)).sort();
-    if (matches.length === 0) {
+
+    const baseLc = base.toLowerCase();
+    const names = [...cand.keys()].filter((n) => n.toLowerCase().startsWith(baseLc)).sort();
+    const text = (name: string) => dirPart + name + (cand.get(name)!.dir ? '/' : '');
+    // Directories are shown blue with a plain (default-color) trailing slash.
+    // `plain` is the uncolored form, used for the inverted (selected) cell so the
+    // directory's own RESET can't cancel the highlight.
+    const label = (name: string): { text: string; plain: string; width: number } => {
+      const dir = cand.get(name)!.dir;
+      const plain = name + (dir ? '/' : '');
+      return {
+        text: dir ? `${ui.dir}${name}${RESET}/` : name,
+        plain,
+        width: displayWidth(plain),
+      };
+    };
+
+    if (names.length === 0) {
       this.term.write('\x07'); // bell
+      this.compSession = undefined;
       return;
     }
-    if (matches.length === 1) {
-      const m = matches[0];
-      this.replaceWord(wordStart, m + (dirs.has(m) ? '/' : ' '));
+    if (names.length === 1) {
+      // Unique match: complete it outright (a trailing space ends the word).
+      const m = text(names[0]);
+      const suffix = cand.get(names[0])!.dir ? '' : ' ';
+      this.replaceRange(wordStart, this.cursor, m + suffix);
+      this.compSession = undefined;
       return;
     }
-    const lcp = commonPrefix(matches);
-    if (lcp.length > prefix.length) {
-      this.replaceWord(wordStart, lcp);
+    const lcp = commonPrefix(names);
+    if (lcp.length > base.length) {
+      // Ambiguous but a longer shared prefix exists — take it; next Tab re-runs.
+      this.replaceRange(wordStart, this.cursor, dirPart + lcp);
+      this.compSession = undefined;
       return;
     }
-    // ambiguous with no further shared prefix — list candidates on a new line
-    this.term.write('\r\n' + matches.join('  ') + '\r\n');
+
+    // Ambiguous with no further shared prefix: print the candidates BELOW the
+    // input line (cursor stays put), then open a menu so the next Tab cycles.
+    this.clearBelow();
+    const items = names.map(label);
+    const layout = this.layoutList(items, this.term.cols);
+    this.compSession = {
+      wordStart,
+      base: word,
+      matches: names.map(text),
+      index: -1,
+      items,
+      layout,
+    };
+    this.drawList(-1);
     this.redraw();
   }
 
-  private replaceWord(wordStart: number, replacement: string): void {
-    this.buffer = this.buffer.slice(0, wordStart) + replacement + this.buffer.slice(this.cursor);
-    this.cursor = wordStart + replacement.length;
+  /** Column layout for the candidate list: pack cells of `maxw` visible width
+   *  plus a 2-space gap, never exceeding the terminal width (minus the indent). */
+  private layoutList(
+    items: { text: string; width: number }[],
+    cols0: number,
+  ): { maxw: number; cols: number; rows: number } {
+    const maxw = Math.max(...items.map((i) => i.width));
+    const gap = 2;
+    const usable = Math.max(1, cols0 - 2); // leave room for the leading indent
+    const cols = Math.max(1, Math.min(items.length, Math.floor(usable / (maxw + gap))));
+    const rows = Math.ceil(items.length / cols);
+    return { maxw, cols, rows };
+  }
+
+  /** Render the candidate list (column-major), inverting the selected cell. */
+  private renderList(
+    items: { text: string; plain: string; width: number }[],
+    layout: { maxw: number; cols: number; rows: number },
+    selected: number,
+  ): string[] {
+    const { maxw, cols, rows } = layout;
+    const lines: string[] = [];
+    for (let r = 0; r < rows; r++) {
+      const cells: string[] = [];
+      for (let c = 0; c < cols; c++) {
+        const i = c * rows + r;
+        if (i < items.length) {
+          const it = items[i];
+          const pad = ' '.repeat(maxw - it.width);
+          cells.push(
+            i === selected ? `${INVERSE}${it.plain}${pad}${RESET}` : it.text + pad,
+          );
+        }
+      }
+      lines.push(cells.join('  ').replace(/\s+$/, ''));
+    }
+    return lines;
+  }
+
+  /** Draw (or redraw) the candidate list on the rows just below the input line.
+   *  The cursor ends back on the input line; the caller redraws it. */
+  private drawList(selected: number): void {
+    const s = this.compSession;
+    if (!s) return;
+    const lines = this.renderList(s.items, s.layout, selected);
+
+    // Move to the first list row (creating it on the first draw), rewrite each
+    // row in place without adding newlines past the list, then return up to the
+    // input line.
+    this.term.write(this.listBelow === 0 ? '\r\n' : '\x1b[1B');
+    for (let i = 0; i < lines.length; i++) {
+      this.term.write('\r\x1b[2K  ' + lines[i]);
+      if (i < lines.length - 1) this.term.write('\r\n');
+    }
+    this.term.write(`\x1b[${lines.length}A\r`);
+    this.listBelow = lines.length;
+  }
+
+  /** Erase the candidate list below the input line and return the cursor to it. */
+  private clearBelow(): void {
+    const n = this.listBelow;
+    if (n <= 0) return;
+    this.term.write('\x1b[1B');
+    for (let i = 0; i < n; i++) {
+      this.term.write('\r\x1b[2K');
+      if (i < n - 1) this.term.write('\x1b[1B');
+    }
+    this.term.write(`\x1b[${n}A\r`);
+    this.listBelow = 0;
+  }
+
+  /** Entries of the directory a completion word points at ('' = cwd dir). */
+  private entriesFor(dirPart: string): DirEntry[] {
+    const slug = resolvePath(dirPart === '' ? '.' : dirPart, this.cwd);
+    const ctx = { store: this.store, list: () => this.registry.list() } as unknown as Context;
+    return isDir(slug, ctx) ? childrenOf(slug, ctx) : [];
+  }
+
+  private replaceRange(start: number, end: number, replacement: string): void {
+    this.buffer = this.buffer.slice(0, start) + replacement + this.buffer.slice(end);
+    this.cursor = start + replacement.length;
     this.redraw();
   }
 
   private redraw(): void {
+    // Clear the line, then draw the left prompt and the input so far.
     this.term.write(`\r\x1b[0K${this.curPrompt}${this.buffer}`);
-    const back = displayWidth(this.buffer) - displayWidth(this.buffer.slice(0, this.cursor));
-    if (back > 0) this.term.write(`\x1b[${back}D`);
+
+    const leftW = this.curWidth;
+    const bufW = displayWidth(this.buffer);
+    const cursorW = displayWidth(this.buffer.slice(0, this.cursor));
+
+    // Right prompt (status pill), flush right. Hidden when the input would
+    // reach it — same as p10k (leaves at least one column of gap).
+    let placedR = false;
+    if (this.curRPrompt) {
+      const rW = displayWidth(stripAnsi(this.curRPrompt));
+      const startCol = this.term.cols - rW; // 0-indexed
+      if (leftW + bufW <= startCol - 1) {
+        this.term.write(`\x1b[${startCol + 1}G` + this.curRPrompt);
+        placedR = true;
+      }
+    }
+
+    // Restore the input cursor. When the right prompt was drawn the line can't
+    // have wrapped, so an absolute move is safe; otherwise step back relatively
+    // (which still lands correctly across a soft wrap).
+    if (placedR) this.term.write(`\x1b[${leftW + cursorW + 1}G`);
+    else {
+      const back = bufW - cursorW;
+      if (back > 0) this.term.write(`\x1b[${back}D`);
+    }
   }
 
   private gotoCursor(): void {

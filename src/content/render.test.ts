@@ -40,7 +40,7 @@ test('codespan: gray underline, same style as links', () => {
   const out = renderMarkdown('`c`');
   assert.ok(out.includes('\x1b[4m'), 'codespan should be underlined like links');
   assert.ok(!out.includes('\x1b[4:4m'), 'underline should be plain, not dashed');
-  assert.ok(out.includes('\x1b[58;5;252m'), 'underline should be a light gray');
+  assert.ok(out.includes('\x1b[58;2;127;132;156m'), 'underline should be a muted gray');
   assert.ok(!out.includes('\x1b[7m'), 'no inverse video');
 });
 

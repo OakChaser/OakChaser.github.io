@@ -1,25 +1,26 @@
 :root {
-  color-scheme: light;
-  --bg: #fafafa;
-  --fg: #2e3338;
-  --border: #d0d7de;
+  color-scheme: dark;
+  /* Catppuccin Mocha (see src/term/palette.ts for the terminal-side palette). */
+  --bg: #1e1e2e;      /* base */
+  --fg: #cdd6f4;      /* text */
+  --border: #313244;  /* surface0 */
   /* CRT overlay tuning — strength of the texture layer over the terminal. */
-  --crt-scan: rgba(0, 0, 0, 0.03);
-  --crt-vignette: rgba(0, 0, 0, 0.13);
+  --crt-scan: rgba(0, 0, 0, 0.16);
+  --crt-vignette: rgba(17, 17, 27, 0.45);
 }
 
 @font-face {
-  font-family: "Maple Mono";
-  src: url("/fonts/MapleMono.woff2") format("woff2");
-  font-weight: 300 700;
+  font-family: "FiraCode Nerd Font";
+  src: url("/fonts/FiraCodeNerdFont-Regular.woff2") format("woff2");
+  font-weight: 300 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: "Maple Mono";
-  src: url("/fonts/MapleMono-Italic.woff2") format("woff2");
-  font-weight: 300 700;
-  font-style: italic;
+  font-family: "FiraCode Nerd Font";
+  src: url("/fonts/FiraCodeNerdFont-Bold.woff2") format("woff2");
+  font-weight: 600 700;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -33,7 +34,7 @@ html, body {
   height: 100%;
   background: var(--bg);
   color: var(--fg);
-  font-family: "Maple Mono", "Fira Code", "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
+  font-family: "FiraCode Nerd Font", "Fira Code", "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, monospace;
 }
 
 #app {
@@ -120,18 +121,18 @@ html, body {
   );
 }
 
-/* Visible scrollbars on the light theme (xterm's default thumb vanishes on white). */
+/* Visible scrollbars on the dark theme (xterm's default thumb vanishes on dark). */
 .xterm-viewport {
   scrollbar-width: thin;
-  scrollbar-color: #c0c7cf transparent;
+  scrollbar-color: #585b70 transparent;
 }
 .xterm-viewport::-webkit-scrollbar { width: 10px; }
 .xterm-viewport::-webkit-scrollbar-track { background: transparent; }
 .xterm-viewport::-webkit-scrollbar-thumb {
-  background: #c0c7cf;
+  background: #585b70;
   border-radius: 5px;
 }
-.xterm-viewport::-webkit-scrollbar-thumb:hover { background: #a8afb7; }
+.xterm-viewport::-webkit-scrollbar-thumb:hover { background: #6c7086; }
 
 /* Phones: the home ASCII banner needs ~35 cols. The default frame paddings eat
    too much horizontal space on a narrow screen and force the banner to wrap,

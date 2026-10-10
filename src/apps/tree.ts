@@ -4,10 +4,11 @@
 import type { Command, DirEntry } from '../shell/types';
 import { resolvePath } from '../shell/path';
 import { isDir, childrenOf } from '../shell/vfs';
-import { BOLD, DIM, RESET, fg256 } from '../term/ansi';
+import { DIM, RESET } from '../term/ansi';
+import { ui } from '../term/palette';
 
-const DIR_COLOR = fg256(62); // muted indigo, matches headings
-const BRANCH = fg256(244); // soft gray for the box-drawing connectors
+const DIR_COLOR = ui.dir; // blue — directories, with a default-color trailing slash
+const BRANCH = ui.border; // soft gray for the box-drawing connectors
 
 export const tree: Command = {
   name: 'tree',
@@ -44,7 +45,7 @@ function drawChildren(
     const last = i === kids.length - 1;
     const edge = last ? '└── ' : '├── ';
     const cont = last ? '    ' : '│   ';
-    const name = k.dir ? `${BOLD}${DIR_COLOR}${k.name}/${RESET}` : k.name;
+    const name = k.dir ? `${DIR_COLOR}${k.name}${RESET}/` : k.name;
     out.push(`${BRANCH}${prefix}${edge}${RESET}${name}`);
     if (k.dir) {
       counts.dirs++;

@@ -3,7 +3,7 @@
 A single-page, fully static personal site that pretends to be a terminal.
 Built on `xterm.js` with a tiny shell on top. Content is plain markdown; the
 compiler turns it into structured data the runtime consumes. Deployed to
-GitHub Pages (`jiangyy.github.io`).
+`oakchaser.me`.
 
 ## Architecture — four decoupled layers
 
