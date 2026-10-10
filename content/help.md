@@ -1,16 +1,16 @@
 # Help
 
-This site is a terminal. Documents are commands — `home`, `help`, `papers` —
+This site is a terminal. Documents are commands — `index`, `help`, `repos` —
 and tools live in `/bin`.
 
 ## commands
 
 - `ls [dir]`    list a directory (try `ls /bin`)
 - `cat <path>`  print a document (no clear; pipe-friendly)
-- `head [path]` first lines (`head -n 5 home`, `cat home | head`)
-- `tail [path]` last lines (`tail -n 3 home`)
-- `grep <pat>`  filter lines (`cat home | grep foo`)
-- `find [path]` walk the FS (`find /bin -type f`, `find -name papers`)
+- `head [path]` first lines (`head -n 5 index`, `cat index | head`)
+- `tail [path]` last lines (`tail -n 3 index`)
+- `grep <pat>`  filter lines (`cat index | grep foo`)
+- `find [path]` walk the FS (`find /bin -type f`, `find -name repos`)
 - `tree [path]` draw the FS as a tree
 - `more [path]` page a document or stdin (space/b/q)
 - `less [path]` same pager, with PageUp/PageDown
@@ -21,7 +21,8 @@ and tools live in `/bin`.
 
 ## tips
 
-- Run a page like `home` to open it (clears the screen).
-- Pipes work: `cat home | wc -l`.
-- Paths: `./papers`, `/help`, `../`.
+- Run a page like `index` to open it (clears the screen).
+- Pipes work: `cat index | wc -l`.
+- Paths: `./repos`, `/help`, `../`.
 - History: ↑/↓ or Ctrl-P/N. Cancel: Ctrl-C. Clear: Ctrl-L.
+- Completion: Tab lists and cycles candidates; Shift-Tab cycles backwards.

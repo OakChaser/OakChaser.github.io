@@ -1,7 +1,8 @@
 import type { Command } from '../shell/types';
-import { BOLD, RESET, fg256 } from '../term/ansi';
+import { RESET } from '../term/ansi';
+import { ui } from '../term/palette';
 
-const DIR = `${BOLD}${fg256(62)}`; // muted indigo — same as `tree`
+const DIR = ui.dir; // blue — directories, with a default-color trailing slash
 
 export const ls: Command = {
   name: 'ls',
@@ -18,7 +19,7 @@ export const ls: Command = {
       return;
     }
     for (const e of entries) {
-      const name = e.dir ? `${DIR}${e.name}/${RESET}` : e.name;
+      const name = e.dir ? `${DIR}${e.name}${RESET}/` : e.name;
       ctx.stdout.print(`  ${name}`);
     }
   },

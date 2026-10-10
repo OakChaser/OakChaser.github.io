@@ -4,6 +4,6 @@ export const whoami: Command = {
   name: 'whoami',
   description: 'who runs this site',
   async run(ctx) {
-    ctx.stdout.print('jyy');
+    ctx.stdout.print('oakchaser');
   },
 };

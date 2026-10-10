@@ -9,18 +9,19 @@ import {
   ITALIC,
   RESET,
   displayWidth,
-  fg256,
   link as oscLink,
   stripAnsi,
+  ulHex,
 } from '../term/ansi';
+import { mocha, ui } from '../term/palette';
 import { wrapWords } from '../term/wrap';
 
-// Modern muted palette (256-color), light-background friendly.
+// Catppuccin Mocha semantic roles (see ../term/palette).
 const C = {
-  heading: fg256(62), // muted indigo
-  bullet: fg256(242), // muted gray
-  border: fg256(244), // soft gray for code/quote rules
-  hr: fg256(252),
+  heading: ui.heading,
+  bullet: ui.bullet,
+  border: ui.border,
+  hr: ui.hr,
 };
 
 /**
@@ -48,8 +49,8 @@ function renderInlineToken(t: Token): string {
     case 'em':
       return ITALIC + renderInline((t as Tokens.Em).tokens) + RESET;
     case 'codespan':
-      // same underline style as links, just gray; text keeps its normal color
-      return `\x1b[58;5;252m\x1b[4m${(t as Tokens.Codespan).text}${RESET}`;
+      // same underline style as links, just a muted gray; text keeps its color
+      return `${ulHex(mocha.overlay1)}\x1b[4m${(t as Tokens.Codespan).text}${RESET}`;
     case 'link': {
       const lk = t as Tokens.Link;
       // Don't turn emails into clickable links.

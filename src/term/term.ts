@@ -9,6 +9,7 @@
 import { Terminal } from '@xterm/xterm';
 import { FitAddon } from '@xterm/addon-fit';
 import { Unicode11Addon } from '@xterm/addon-unicode11';
+import { termTheme } from './palette';
 import '@xterm/xterm/css/xterm.css';
 
 export interface KeyEvent {
@@ -60,7 +61,7 @@ export class Term {
     this.onNavigate = onNavigate;
     this.xterm = new Terminal({
       fontFamily:
-        '"Maple Mono", "Fira Code", "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, ' +
+        '"FiraCode Nerd Font", "Fira Code", "JetBrains Mono", "SFMono-Regular", ui-monospace, Menlo, Consolas, ' +
         '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", ' +
         '"Apple Color Emoji", "Segoe UI Emoji", monospace',
       fontSize: 16,
@@ -81,12 +82,7 @@ export class Term {
           window.open(target, '_blank', 'noopener');
         },
       },
-      theme: {
-        background: '#fafafa',
-        foreground: '#2e3338',
-        cursor: '#4a5158',
-        selectionBackground: '#d0d7de',
-      },
+      theme: termTheme,
     });
 
     this.xterm.loadAddon(this.fitAddon);

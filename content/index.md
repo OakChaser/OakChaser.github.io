@@ -1,25 +1,23 @@
-# 蒋炎岩 jyy@nju.edu.cn
+# OakChaser
 
-```plain
-▌ ▌                ▜▘▗
-▝▞▝▀▖▛▀▖▌ ▌▝▀▖▛▀▖  ▐ ▄ ▝▀▖▛▀▖▞▀▌
- ▌▞▀▌▌ ▌▚▄▌▞▀▌▌ ▌ ▌▐ ▐ ▞▀▌▌ ▌▚▄▌
- ▘▝▀▘▘ ▘▗▄▘▝▀▘▘ ▘ ▝▘ ▀▘▝▀▘▘ ▘▗▄▘
-```
+**Hi, OakChaser here.**
 
+*Oak...Chaser...?*
 
-**Associate Professor** · [School of Computer Science](https://cs.nju.edu.cn/) · [Nanjing University](https://www.nju.edu.cn/)
-**Tech Lead** · [Cosmic Dawn AI](https://cosmicdawnai.com/)
+> 🐙 [GitHub](https://github.com/OakChaser) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)
 
-> 👤 [Bio](#bio) · 📚 [Papers](#papers) · 👥 [Team](#team)
-> 🧭 [Wiki](https://jyywiki.cn/) · 📰 [Zhihu](https://www.zhihu.com/people/jiang-yan-yan-75) · 📕 [Rednote](https://www.xiaohongshu.com/user/profile/5c24f0850000000005012295)
->
-> Room 0b1111111111, CST Building
-> Nanjing University Xianlin Campus
+## Work in progress
 
-*I build agentic AI systems that power test-time scaling toward the broader horizon of general intelligence.*
+- 🔨 [Conic Launcher](https://github.com/conic-apps/launcher) — Strikingly unique and blazing fast Minecraft Launcher.
+- 🔨 [Weihuda WeApp](https://github.com/qnxg) — Wechat mini program for HNU.
 
-- This page doubles as a shell.
-  Try: `bio`, `help`, `tree bin/ | less`.
+## Finished
 
-Last update: {{ displayDate(2026, 7, 31) }}
+- ✅ [Conic Nexus](https://github.com/conic-apps/conic-nexus) — Cross-LAN multiplayer library.
+- ✅ [Conic Worldmap](https://github.com/conic-apps/) — Lightweight Minecraft world map rendering library.
+- ✅ [Beat Visualizer](https://github.com/OakChaser/beat-visualizer) — AI slop music player with beat visualizer.
+- ✅ [LexiForge](https://github.com/OakChaser/LexiForge) — Human slop word book.
+
+- This page doubles as a shell. Try: `help`, `repos`, `tree bin/ | less`.
+
+Last update: {{ displayDate(2026, 10, 10) }}

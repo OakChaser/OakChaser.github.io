@@ -11,7 +11,31 @@ export const INVERSE = '\x1b[7m';
 export const fg = (n: number) => `\x1b[${30 + n}m`; // 0–7
 export const bg = (n: number) => `\x1b[${40 + n}m`;
 export const fg256 = (n: number) => `\x1b[38;5;${n}m`; // 0–255
-export const bg256 = (n: number) => `\x1b[48;5;${n}m`;
+export const bg256 = (n: number) => `\x1b[48;5;${n}m`; // 0–255
+
+/** Parse '#rrggbb' into its three 0–255 channels. */
+function rgb(hex: string): [number, number, number] {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 0xff, (n >> 8) & 0xff, n & 0xff];
+}
+
+/** Foreground truecolor SGR from a '#rrggbb' color. */
+export function fgHex(hex: string): string {
+  const [r, g, b] = rgb(hex);
+  return `\x1b[38;2;${r};${g};${b}m`;
+}
+
+/** Background truecolor SGR from a '#rrggbb' color. */
+export function bgHex(hex: string): string {
+  const [r, g, b] = rgb(hex);
+  return `\x1b[48;2;${r};${g};${b}m`;
+}
+
+/** Underline truecolor SGR from a '#rrggbb' color (SGR 58). */
+export function ulHex(hex: string): string {
+  const [r, g, b] = rgb(hex);
+  return `\x1b[58;2;${r};${g};${b}m`;
+}
 
 export const move = (x: number, y: number) => `\x1b[${y + 1};${x + 1}H`;
 export const moveCol = (x: number) => `\x1b[${x + 1}G`;

@@ -7,13 +7,13 @@ test('store: lists all compiled documents', () => {
     .all()
     .map((d) => d.slug)
     .sort();
-  assert.deepEqual(slugs, ['bio', 'help', 'index', 'papers']);
+  assert.deepEqual(slugs, ['help', 'index', 'repos']);
 });
 
 test('store: title derived from h1', () => {
   const index = createStore().get('index');
   assert.ok(index);
-  assert.ok(index.title.includes('Yanyan Jiang'), `title was: ${index.title}`);
+  assert.equal(index.title, 'OakChaser');
   assert.equal(index.kind, 'page');
 });
 
