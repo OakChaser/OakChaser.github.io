@@ -4,6 +4,7 @@
 import { Term } from './term/term';
 import { createRegistry } from './shell/registry';
 import { Shell } from './shell/shell';
+import { commandFromHash } from './shell/hash';
 import { createStore } from './content/store';
 import { docCommand } from './content/commands';
 import { builtinApps } from './apps';
@@ -12,8 +13,7 @@ const termHost = document.getElementById('term-host');
 const termScreen = document.getElementById('term-screen');
 if (!termHost || !termScreen) throw new Error('missing #term-host/#term-screen');
 
-const commandFromHash = () => location.hash.replace(/^#/, '').trim();
-const initial = commandFromHash() || 'index';
+const initial = commandFromHash(location.hash) || 'index';
 
 let shell: Shell;
 // Internal links push a history entry (so Back works) and run the command.
@@ -31,7 +31,7 @@ shell = new Shell({ term, registry, store, initialCommand: initial });
 
 // Back/Forward: run whatever page the history entry recorded.
 window.addEventListener('popstate', (e) => {
-  const cmd = (e.state?.cmd as string | undefined) || commandFromHash() || 'index';
+  const cmd = (e.state?.cmd as string | undefined) || commandFromHash(location.hash) || 'index';
   shell.inject(cmd);
 });
 

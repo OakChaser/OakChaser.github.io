@@ -5,7 +5,7 @@ import { buildContent } from './build-content';
 test('compiler: derives documents from the content tree', async () => {
   const m = await buildContent();
   const slugs = m.documents.map((d) => d.slug).sort();
-  assert.deepEqual(slugs, ['help', 'index', 'repos']);
+  assert.deepEqual(slugs, ['friends', 'help', 'index', 'repos']);
 });
 
 test('compiler: title from first h1, slug from path, default kind page', async () => {
