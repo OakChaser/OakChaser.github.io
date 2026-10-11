@@ -19,6 +19,8 @@ and tools live in `/bin`.
 - `wc`          count lines/words/bytes from stdin
 - `cowsay <msg>`  the cow says it (also reads stdin)
 - `fastfetch`   print a (fake) system summary
+- `reboot`      reload the page
+- `poweroff`    close the tab (best effort)
 - `exit`        return to the home page (same as Ctrl-D on an empty line)
 
 ## tips
