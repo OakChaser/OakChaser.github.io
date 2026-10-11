@@ -11,7 +11,7 @@ test('compiler: derives documents from the content tree', async () => {
 test('compiler: title from first h1, slug from path, default kind page', async () => {
   const m = await buildContent();
   const index = m.documents.find((d) => d.slug === 'index')!;
-  assert.equal(index.title, 'OakChaser');
+  assert.equal(index.title, 'OakChaser nya@oakchaser.me');
   assert.equal(index.kind, 'page');
   const repos = m.documents.find((d) => d.slug === 'repos')!;
   assert.equal(repos.title, 'Repos');
