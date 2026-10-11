@@ -17,6 +17,8 @@ and tools live in `/bin`.
 - `cd <dir>`    change directory (`cd /bin`, `cd ..`, `cd /`)
 - `clear`       clear the screen
 - `wc`          count lines/words/bytes from stdin
+- `cowsay <msg>`  the cow says it (also reads stdin)
+- `fastfetch`   print a (fake) system summary
 - `exit`        return to the home page (same as Ctrl-D on an empty line)
 
 ## tips
