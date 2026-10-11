@@ -13,7 +13,7 @@ test('store: lists all compiled documents', () => {
 test('store: title derived from h1', () => {
   const index = createStore().get('index');
   assert.ok(index);
-  assert.equal(index.title, 'OakChaser');
+  assert.equal(index.title, 'OakChaser nya@oakchaser.me');
   assert.equal(index.kind, 'page');
 });
 
