@@ -15,8 +15,10 @@ import { exit } from './exit';
 import { whoami } from './whoami';
 import { cowsay } from './cowsay';
 import { fastfetch } from './fastfetch';
+import { reboot, poweroff } from './power';
 
 /** Built-in /bin command set. Register more apps here — that's the only wiring. */
 export const builtinApps: Command[] = [
   ls, cat, head, tail, grep, find, tree, more, less, cd, pwd, wc, clear, exit, whoami, cowsay, fastfetch,
+  reboot, poweroff,
 ];
