@@ -69,6 +69,10 @@ export class Shell {
   private curRPrompt = '';
   /** Exit status of the last executed command (drives status + transient color). */
   private lastOk = true;
+  /** Rows the input region (prompt + input, possibly wrapped) occupies. */
+  private lineRows = 1;
+  /** Cursor's row (0-based) within that region. */
+  private cursorRow = 0;
   /** Rows currently occupied by the candidate list BELOW the input line. */
   private listBelow = 0;
   private buffer = '';
@@ -142,10 +146,23 @@ export class Shell {
     return `${fgHex(c)}${p10k.prompt}${RESET} `;
   }
 
-  /** Replace the current (p10k) prompt line with `❯ <shown>` and a newline. */
+  /** Replace the whole input region with `❯ <shown>` and a newline. Clears the
+   *  full (possibly wrapped) multi-row region, not just the cursor's row. */
   private finishLine(shown: string): void {
     this.clearBelow(); // drop any candidate list sitting under the input line
-    this.term.write('\r\x1b[2K' + this.transientPrompt() + shown + '\r\n');
+    let out = '\x1b[?25l';
+    if (this.cursorRow > 0) out += `\x1b[${this.cursorRow}A`;
+    out += '\r';
+    const rows = this.lineRows;
+    for (let i = 0; i < rows; i++) {
+      out += '\x1b[2K';
+      if (i < rows - 1) out += '\x1b[1B';
+    }
+    if (rows > 1) out += `\x1b[${rows - 1}A`;
+    out += '\r' + this.transientPrompt() + shown + '\r\n';
+    this.term.write(out + '\x1b[?25h');
+    this.lineRows = 1;
+    this.cursorRow = 0;
   }
 
   /** Start the read/eval loop. Never returns. */
@@ -160,6 +177,8 @@ export class Shell {
       this.buffer = '';
       this.cursor = 0;
       this.histIdx = -1;
+      this.lineRows = 1;
+      this.cursorRow = 0;
       this.updateTitle();
       const { text, width } = this.promptFor();
       this.curPrompt = text;
@@ -316,23 +335,23 @@ export class Shell {
       case '\x06': // Ctrl-F
         if (this.cursor < this.buffer.length) {
           this.cursor++;
-          this.gotoCursor();
+          this.redraw();
         }
         break;
       case '\x1b[D':
       case '\x02': // Ctrl-B
         if (this.cursor > 0) {
           this.cursor--;
-          this.gotoCursor();
+          this.redraw();
         }
         break;
       case '\x01': // Ctrl-A
         this.cursor = 0;
-        this.gotoCursor();
+        this.redraw();
         break;
       case '\x05': // Ctrl-E
         this.cursor = this.buffer.length;
-        this.gotoCursor();
+        this.redraw();
         break;
       case '\x0b': // Ctrl-K
         this.buffer = this.buffer.slice(0, this.cursor);
@@ -602,37 +621,64 @@ export class Shell {
     this.redraw();
   }
 
+  /**
+   * Redraw the input line. The prompt + input may span several terminal rows
+   * (long input wraps), so this tracks the region's row count (`lineRows`) and
+   * the cursor's row within it (`cursorRow`): it steps to the region's first
+   * row, clears the whole (possibly taller) previous region, redraws, then
+   * places the cursor. A single-row redraw wouldn't erase the earlier wrapped
+   * rows, which is what duplicated the prompt on every keystroke.
+   */
   private redraw(): void {
-    // Clear the line, then draw the left prompt and the input so far.
-    this.term.write(`\r\x1b[0K${this.curPrompt}${this.buffer}`);
+    const cols = Math.max(1, this.term.cols);
+    const pw = this.curWidth;
+    const bw = displayWidth(this.buffer);
+    const total = pw + bw;
+    const rows = Math.max(1, Math.ceil(total / cols));
 
-    const leftW = this.curWidth;
-    const bufW = displayWidth(this.buffer);
-    const cursorW = displayWidth(this.buffer.slice(0, this.cursor));
+    // Emit the WHOLE redraw as one write, with the cursor hidden: separate
+    // writes would each get their own render, flashing the cursor at row starts
+    // as it is moved around. One write = one parse = one render.
+    let out = '\x1b[?25l';
 
-    // Right prompt (status pill), flush right. Hidden when the input would
-    // reach it — same as p10k (leaves at least one column of gap).
-    let placedR = false;
+    // 1) Back to the first row of the previous region and clear all its rows.
+    if (this.cursorRow > 0) out += `\x1b[${this.cursorRow}A`;
+    out += '\r';
+    const clearRows = Math.max(this.lineRows, rows);
+    for (let i = 0; i < clearRows; i++) {
+      out += '\x1b[2K';
+      if (i < clearRows - 1) out += '\x1b[1B';
+    }
+    if (clearRows > 1) out += `\x1b[${clearRows - 1}A`;
+    out += '\r';
+
+    // 2) Draw the prompt + input, then return to the first row.
+    out += this.curPrompt + this.buffer;
+    if (rows > 1) out += `\x1b[${rows - 1}A`;
+    out += '\r';
+
+    // 3) Right prompt (status pill) on the first row, flush right — hidden when
+    //    the input would reach it (same as p10k; keeps a one-column gap).
     if (this.curRPrompt) {
       const rW = displayWidth(stripAnsi(this.curRPrompt));
-      const startCol = this.term.cols - rW; // 0-indexed
-      if (leftW + bufW <= startCol - 1) {
-        this.term.write(`\x1b[${startCol + 1}G` + this.curRPrompt);
-        placedR = true;
-      }
+      const startCol = cols - rW; // 0-indexed
+      if (total <= startCol - 1) out += `\x1b[${startCol + 1}G` + this.curRPrompt + '\r';
     }
 
-    // Restore the input cursor. When the right prompt was drawn the line can't
-    // have wrapped, so an absolute move is safe; otherwise step back relatively
-    // (which still lands correctly across a soft wrap).
-    if (placedR) this.term.write(`\x1b[${leftW + cursorW + 1}G`);
-    else {
-      const back = bufW - cursorW;
-      if (back > 0) this.term.write(`\x1b[${back}D`);
+    // 4) Place the edit cursor at its row/column within the region.
+    const abs = pw + displayWidth(this.buffer.slice(0, this.cursor));
+    let crow = Math.floor(abs / cols);
+    let ccol = abs % cols;
+    if (crow > rows - 1) {
+      crow = rows - 1;
+      ccol = cols - 1;
     }
-  }
+    if (crow > 0) out += `\x1b[${crow}B`;
+    out += `\x1b[${ccol + 1}G`;
 
-  private gotoCursor(): void {
-    this.term.write(`\x1b[${this.curWidth + displayWidth(this.buffer.slice(0, this.cursor)) + 1}G`);
+    this.term.write(out + '\x1b[?25h');
+
+    this.lineRows = rows;
+    this.cursorRow = crow;
   }
 }
