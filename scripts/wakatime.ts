@@ -1,7 +1,11 @@
 // Build-time generator for the terminal's `wakatime` page.
 //
-// Ports the rendering model of Twisuki/custom_waka_readme into a plain build
-// script. The template at .github/wakatime-template.md may contain:
+// Credit: the template model (inline {expr} tokens plus CUSTOM_WAKA START/END
+// code blocks sharing one scope), and the parser/compile/run design below, are
+// adapted from Twisuki/custom_waka_readme —
+// https://github.com/Twisuki/custom_waka_readme
+//
+// The template at .github/wakatime-template.md may contain:
 //   - {expr}   inline JS expression, stringified into the output
 //   - <!--CUSTOM_WAKA_START--> ... <!--CUSTOM_WAKA_END-->   a JS block whose
 //     variables are shared, top-to-bottom in source order, with later tokens

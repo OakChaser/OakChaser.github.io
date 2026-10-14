@@ -55,3 +55,11 @@ Every content document is also a command, so `about` and `cat about` are equival
 
 `help`, `ls`, `about`, `cat projects`, `about | wc -l`, `tree`, `more help`. Or
 click the buttons on top — they just inject a command.
+
+## Credits
+
+The `wakatime` page is rendered by `scripts/wakatime.ts` using the template
+model of [Twisuki/custom_waka_readme](https://github.com/Twisuki/custom_waka_readme):
+inline expression tokens plus `CUSTOM_WAKA` START/END code blocks evaluated in
+an isolated VM. The parser, shared block/token scope, and `{{...}}` escaping are
+adapted from that project's design.

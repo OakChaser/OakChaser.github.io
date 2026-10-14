@@ -38,7 +38,7 @@ export const manifest: Manifest = {
     {
       "slug": "wakatime",
       "title": "Wakatime",
-      "body": "# Wakatime\n\n\nTotal time: **924 hrs 38 mins**\n\n## Daily Trend (14 days)\n\n\n```\n7h ┤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n   │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n   │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀\n   │⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⣀⣀⣀⣀⣠⣤⣤\n0h └────────────────────────────\n    10-02                  10-15\n```\n\n## Languages (14 days)\n\n\n- Other                16 hrs 45 mins\n- Markdown             3 hrs 18 mins\n- TypeScript           1 hrs 34 mins\n- Rust                 0 hrs 45 mins\n- YAML                 0 hrs 33 mins\n\n## Editors (14 days)\n\n- VS Code              23 hrs 27 mins\n\nLast updated at 2026-10-14",
+      "body": "<!--\n  Wakatime stats page. Template syntax (inline expression tokens plus CUSTOM_WAKA\n  START/END code blocks) and the underlying rendering design are adapted from\n  Twisuki/custom_waka_readme — https://github.com/Twisuki/custom_waka_readme\n-->\n\n# Wakatime\n\n\nTotal time: **n/a**\n\n## Daily Trend (14 days)\n\n\n```\nno data\n```\n\n## Languages (14 days)\n\n\n- no data yet\n\n## Editors (14 days)\n\n- no data yet\n\nLast updated at 2026-10-14 (UTC)",
       "path": "wakatime.md",
       "kind": "page",
       "apps": []
