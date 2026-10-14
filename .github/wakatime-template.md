@@ -105,4 +105,4 @@ const editors14 = ranked(last14.editors, 5)
 
 {editors14}
 
-Last updated at {updatedAt}
+Last updated at {updatedAt} (UTC)
