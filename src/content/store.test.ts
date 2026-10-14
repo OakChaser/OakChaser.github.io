@@ -7,7 +7,7 @@ test('store: lists all compiled documents', () => {
     .all()
     .map((d) => d.slug)
     .sort();
-  assert.deepEqual(slugs, ['friends', 'help', 'index', 'repos']);
+  assert.deepEqual(slugs, ['friends', 'help', 'index', 'repos', 'wakatime']);
 });
 
 test('store: title derived from h1', () => {
