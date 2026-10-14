@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "build:content": "tsx scripts/build-content.ts",
-    "dev": "vite",
+    "wakatime": "tsx scripts/wakatime.ts",
+    "dev": "npm run wakatime && vite",
     "build": "tsx scripts/build-content.ts && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",

@@ -6,6 +6,6 @@ export default defineConfig({
   base: '/',
   plugins: [contentPlugin()],
   server: {
-    host: true,
+    host: 'localhost',
   },
 });
