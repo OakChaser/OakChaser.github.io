@@ -1,31 +1,28 @@
+<!--
+  Wakatime stats page. Template syntax (inline expression tokens plus CUSTOM_WAKA
+  START/END code blocks) and the underlying rendering design are adapted from
+  Twisuki/custom_waka_readme — https://github.com/Twisuki/custom_waka_readme
+-->
+
 # Wakatime
 
 
-Total time: **924 hrs 38 mins**
+Total time: **n/a**
 
 ## Daily Trend (14 days)
 
 
 ```
-7h ┤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣶⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-   │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-   │⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀
-   │⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣆⣀⣀⣀⣀⣠⣤⣤
-0h └────────────────────────────
-    10-02                  10-15
+no data
 ```
 
 ## Languages (14 days)
 
 
-- Other                16 hrs 45 mins
-- Markdown             3 hrs 18 mins
-- TypeScript           1 hrs 34 mins
-- Rust                 0 hrs 45 mins
-- YAML                 0 hrs 33 mins
+- no data yet
 
 ## Editors (14 days)
 
-- VS Code              23 hrs 27 mins
+- no data yet
 
-Last updated at 2026-10-14
+Last updated at 2026-10-14 (UTC)

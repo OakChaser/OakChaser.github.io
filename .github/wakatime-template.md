@@ -1,3 +1,9 @@
+<!--
+  Wakatime stats page. Template syntax (inline expression tokens plus CUSTOM_WAKA
+  START/END code blocks) and the underlying rendering design are adapted from
+  Twisuki/custom_waka_readme — https://github.com/Twisuki/custom_waka_readme
+-->
+
 # Wakatime
 
 <!--CUSTOM_WAKA_START-->
