@@ -1,7 +1,7 @@
 # Help
 
-This site is a terminal. Documents are commands — `index`, `help`, `repos`,
-`wakatime` — and tools live in `/bin`.
+This site is a terminal. Documents are commands — `index`, `help`, `repos` —
+and tools live in `/bin`.
 
 ## commands
 
