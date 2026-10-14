@@ -4,7 +4,7 @@
 
 *Oak...Chaser...?*
 
-> 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 👥 [Friends](#friends) · 🧰 [Conic Apps](https://github.com/conic-apps) · 📦 [Repos](#repos)
+> 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 👥 [Friends](#friends) · 📦 [Repos](#repos) · ⏱ [Wakatime](#wakatime)
 
 ## Work in progress
 
