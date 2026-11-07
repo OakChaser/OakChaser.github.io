@@ -6,10 +6,14 @@
   "scripts": {
     "build:content": "tsx scripts/build-content.ts",
     "wakatime": "tsx scripts/wakatime.ts",
+    "postinstall": "npm run build:content",
+    "predev": "npm run build:content",
     "dev": "npm run wakatime && vite",
     "build": "tsx scripts/build-content.ts && vite build",
     "preview": "vite preview",
+    "pretypecheck": "npm run build:content",
     "typecheck": "tsc --noEmit",
+    "pretest": "npm run build:content",
     "test": "node --import tsx --test \"src/**/*.test.ts\" \"scripts/**/*.test.ts\"",
     "deploy": "npm run build && gh-pages -d dist -b gh-pages"
   },
