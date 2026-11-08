@@ -1,0 +1,24 @@
+{
+  "printWidth": 80,
+  "proseWrap": "always",
+  "tabWidth": 2,
+  "useTabs": false,
+  "endOfLine": "lf",
+  "singleQuote": false,
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "printWidth": 100,
+        "proseWrap": "always"
+      }
+    },
+    {
+      "files": "content/*.md",
+      "options": {
+        "printWidth": 10000,
+        "proseWrap": "always"
+      }
+    }
+  ]
+}

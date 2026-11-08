@@ -2,22 +2,26 @@
 
 **Hi, OakChaser here.**
 
-*Oak...Chaser...?*
+_Oak...Chaser...?_
 
 > 🐙 [GitHub](https://github.com/OakChaser) · 📝 [Blog](https://blog.oakchaser.me) · 👥 [Friends](#friends) · 📦 [Repos](#repos) · ⏱ [Wakatime](#wakatime)
 
-## Work in progress
+## As a student
 
-- 🔨 [Conic Launcher](https://github.com/conic-apps/launcher) — Strikingly unique and blazing fast Minecraft Launcher.
-- 🔨 [Weihuda WeApp](https://github.com/qnxg) — Wechat mini program for HNU.
+I'm currently an undergraduate at Hunan University studying computer science.
 
-## Finished
+I also help out on [qnxg](https://github.com/qnxg), where I maintain Weihuda, a WeChat Mini Program for HNU.
 
-- ✅ [Conic Nexus](https://github.com/conic-apps/conic-nexus) — Cross-LAN multiplayer library.
-- ✅ [Conic Worldmap](https://github.com/conic-apps/) — Lightweight Minecraft world map rendering library.
-- ✅ [Beat Visualizer](https://github.com/OakChaser/beat-visualizer) — AI slop music player with beat visualizer.
-- ✅ [LexiForge](https://github.com/OakChaser/LexiForge) — Human slop word book.
+## As a piano hobbyist
 
-- This page doubles as a shell. Try: `help`, `repos`, `tree bin/ | less`.
+Music helps me shake off a bad mood. I'm working through [Animenz's piano arrangements](https://www.youtube.com/@Animenzzz), which are a great blend of classical and anime music.
 
-Last update: {{ displayDate(2026, 10, 10) }}
+## As a Minecraft player
+
+Recently, I’ve been mainly active in HMO, a Minecraft club at Hunan University.
+
+I’m also currently maintaining [Conic Launcher](https://conicmc.app), a Minecraft launcher with a unique design.
+
+_This page doubles as a shell. Try: `help`, `repos`, `tree bin/ | less`._
+
+_Last updated: {{ displayDate(2026, 11, 8) }}_
