@@ -1,71 +1,79 @@
-# ghpage — terminal-style homepage
+# A terminal-style homepage
 
-A single-page, fully static personal site that pretends to be a terminal.
-Built on `xterm.js` with a tiny shell on top. Content is plain markdown; the
-compiler turns it into structured data the runtime consumes. Deployed to
-`oakchaser.me`.
+A personal site that pretends to be a terminal. Built on `xterm.js` with a tiny shell on top. The
+compiler turns it into structured data the runtime consumes. Deployed to `oakchaser.me`.
 
-## Architecture — four decoupled layers
+## Usage
 
+The site runs a shell. Commands are entered at the prompt and executed with `Enter`.
+
+### Pages
+
+Pages are commands: `index`, `repos`, `friends`, `wakatime`, `help`. Enter a page name to open it.
+Internal links execute the corresponding command and push a history entry; browser back and forward
+navigate the opened pages. Some page can be opened directly by hash, for example `/#repos`.
+
+`cat` prints a page without clearing the screen. The output remains in scrollback and can be piped.
+
+```sh
+cat repos
+cat repos | grep conic
+cat index | wc -l
 ```
-content/*.md ──[compiler]──▶ src/generated/content.ts (manifest)
-                                   │
-index.html ──vite──▶ dist/         ▼
-                     runtime:   main.ts
-                        ├─ term/     xterm.js wrapper + ANSI/TUI primitives + buttons
-                        ├─ shell/    Registry + Parser + REPL (pipes, history, inject)
-                        ├─ content/  manifest store + markdown→ANSI renderer + doc commands
-                        └─ apps/     oneshot & TUI commands, plugin-registered
-```
 
-- **content** — pure markdown. No frontmatter, no type markers. The directory
-  tree *is* the structure (`about.md` → `about`, `blog/hello.md` → `blog/hello`).
-  The compiler alone decides what each document becomes (today: everything is a
-  page; the `analyze()` hook is where a future LLM-driven pass decides kind and
-  generated artifacts).
-- **compiler** (`scripts/build-content.ts`) — standalone, runnable on its own.
-  Emits `src/generated/content.ts`, which is build output and **not tracked by
-  git** (`postinstall` / `dev` / `build` / `test` / `typecheck` regenerate it, and
-  CI regenerates it during deploy). Re-runs automatically in dev via the vite
-  plugin whenever `content/` changes — so editing `content/*.md` is enough.
-- **framework** (`term/`, `shell/`) — knows nothing about markdown. `shell/types.ts`
-  is the contract every command codes against.
-- **apps** (`apps/`) — each file exports a `Command`; add one and register it in
-  `apps/index.ts`. Nothing else changes.
+### Commands
 
-## Commands: oneshot and TUI share one shell
+| Command        | Description                                                 |
+| -------------- | ----------------------------------------------------------- |
+| `help`         | list available commands                                     |
+| `ls [dir]`     | list directory contents; `ls /bin` lists commands           |
+| `cat <path>`   | print a page without clearing the screen                    |
+| `head [path]`  | print the first lines; `-n N` sets the count                |
+| `tail [path]`  | print the last lines; `-n N` sets the count                 |
+| `grep <pat>`   | print lines matching a pattern; reads stdin without a path  |
+| `find [path]`  | walk the filesystem; `-name GLOB`, `-type f\|d`             |
+| `tree [path]`  | print the filesystem as a tree                              |
+| `more [path]`  | page a document or stdin                                    |
+| `less [path]`  | identical to `more`                                         |
+| `cd <dir>`     | change directory                                            |
+| `pwd`          | print the working directory                                 |
+| `wc`           | count lines, words and bytes; `-l`, `-w`, `-c`; reads stdin |
+| `cowsay <msg>` | print the message as ASCII art; reads stdin                 |
+| `fastfetch`    | print a synthetic system summary                            |
+| `whoami`       | print the user name                                         |
+| `exit`         | return to the home page                                     |
+| `reboot`       | reload the page                                             |
+| `poweroff`     | close the tab; not guaranteed to succeed                    |
 
-A `Command` is just `run(ctx, argv)`. Oneshot commands read `ctx.stdin` / write
-`ctx.stdout`. A TUI command calls `ctx.term.takeOver()`, draws and handles keys,
-then `release()`s — the shell awaits `run`, so the two never fight over input.
-Pipes work (`about | wc -l`) because the shell chains `stdout` → next `stdin`.
+Paths resolve relative to the current directory: `./repos`, `/help`, `../`. `cd /bin` followed by
+`ls` lists the executables.
 
-Every content document is also a command, so `about` and `cat about` are equivalent.
+### Keys
 
-## Scripts
+| Key                              | Action                                       |
+| -------------------------------- | -------------------------------------------- |
+| `Enter`                          | execute the line                             |
+| `Tab` / `Shift-Tab`              | complete commands and paths; repeat to cycle |
+| `Up`, `Down`, `Ctrl-P`, `Ctrl-N` | browse history                               |
+| `Ctrl-C`                         | cancel the current line                      |
+| `Ctrl-L`                         | clear the screen                             |
+| `Ctrl-D` on an empty line        | return to the home page                      |
 
-| script            | what it does                                       |
-| ----------------- | -------------------------------------------------- |
-| `npm run dev`     | vite dev server; recompiles content on save        |
-| `npm run build`   | compile content + production bundle to `dist/`     |
-| `npm run preview` | serve the built `dist/` locally                    |
-| `npm test`        | node:test unit tests (parser/render/store/...)      |
-| `npm run typecheck` | `tsc --noEmit`                                   |
-| `npm run deploy`  | build + push `dist/` to the `gh-pages` branch      |
+`more` and `less` accept the following keys:
 
-`src/generated/content.ts` is generated by `postinstall` and by the `pre*` hooks
-of `dev` / `test` / `typecheck`, so you never have to run `build:content` by hand
-— edit `content/*.md` and commit.
-
-## Try it
-
-`help`, `ls`, `about`, `cat projects`, `about | wc -l`, `tree`, `more help`. Or
-click the buttons on top — they just inject a command.
+| Key                    | Action      |
+| ---------------------- | ----------- |
+| `Space`, `PageDown`    | next page   |
+| `b`, `PageUp`          | prev page   |
+| `Up`, `Down`, `k`, `j` | scroll line |
+| `q`, `Esc`             | quit        |
 
 ## Credits
 
-The `wakatime` page is rendered by `scripts/wakatime.ts` using the template
-model of [Twisuki/custom_waka_readme](https://github.com/Twisuki/custom_waka_readme):
-inline expression tokens plus `CUSTOM_WAKA` START/END code blocks evaluated in
-an isolated VM. The parser, shared block/token scope, and `{{...}}` escaping are
-adapted from that project's design.
+`scripts/wakatime.ts` uses the template model of
+[Twisuki/custom_waka_readme](https://github.com/Twisuki/custom_waka_readme): inline expression
+tokens and `CUSTOM_WAKA` START/END blocks evaluated in an isolated VM. The parser, shared
+block/token scope and `{{...}}` escaping derive from that project.
+
+The site is a modification of
+[jiangyy/jiangyy.github.io](https://github.com/jiangyy/jiangyy.github.io).
